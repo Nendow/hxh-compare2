@@ -21,6 +21,10 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
+
+  // ✅ Updated for GitHub Pages
+  basePath: '/hxh-compare2',
+  assetPrefix: '/hxh-compare2/',
 }
 
 mergeConfig(nextConfig, userConfig)
