@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [master]  # Changed from main to master
+    branches: [master]
   workflow_dispatch:
 
 permissions:
@@ -23,13 +23,39 @@ jobs:
           node-version: 18
       
       - name: Install dependencies
-        run: npm install --legacy-peer-deps  # Added --legacy-peer-deps flag
+        run: npm install --legacy-peer-deps
+      
+      - name: List files before build
+        run: ls -la
       
       - name: Build
         run: npm run build
       
+      - name: List files after build
+        run: |
+          echo "Current directory:"
+          ls -la
+          echo "Checking for output directories:"
+          ls -la dist 2>/dev/null || echo "No dist directory"
+          ls -la build 2>/dev/null || echo "No build directory"
+          ls -la out 2>/dev/null || echo "No out directory"
+          ls -la .next 2>/dev/null || echo "No .next directory"
+      
+      - name: Create output directory if it doesn't exist
+        run: mkdir -p out
+      
       - name: Add .nojekyll file
         run: touch out/.nojekyll
+      
+      - name: Copy files to out directory if needed
+        run: |
+          if [ -d "dist" ] && [ ! -d "out" ]; then
+            cp -r dist/* out/
+          elif [ -d "build" ] && [ ! -d "out" ]; then
+            cp -r build/* out/
+          elif [ -d ".next" ] && [ ! -d "out" ]; then
+            cp -r .next/* out/
+          fi
       
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
