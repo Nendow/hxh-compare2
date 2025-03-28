@@ -1,27 +1,42 @@
 "use client"
 export const runtime = "edge"
-import { type NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
 
-export async function POST(request: NextRequest) {
+import { login, setAuthCookie } from "@/lib/auth"
+
+export async function POST(request: Request) {
   try {
     const body = await request.json()
     const { username, password } = body
 
     if (!username || !password) {
-      return NextResponse.json({ error: "Username and password are required" }, { status: 400 })
+      return new Response(JSON.stringify({ success: false, message: "Username and password are required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      })
     }
 
-    const result = await auth.login(username, password)
+    const result = await login(username, password)
 
     if (!result.success) {
-      return NextResponse.json({ error: result.message }, { status: 401 })
+      return new Response(JSON.stringify({ success: false, message: result.message }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      })
     }
 
-    return NextResponse.json({ user: result.user })
+    // Create the response
+    const response = new Response(JSON.stringify({ success: true, user: result.user }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    })
+
+    // Set the auth cookie
+    return setAuthCookie(response, result.token)
   } catch (error) {
-    console.error("Login error:", error)
-    return NextResponse.json({ error: "An unexpected error occurred" }, { status: 500 })
+    return new Response(JSON.stringify({ success: false, message: "An error occurred" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }
 
