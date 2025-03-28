@@ -1,3 +1,4 @@
+"use client"
 export const runtime = "edge"
 import { type NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
