@@ -1,7 +1,6 @@
-// The runtime must be a string, not a function
+// Make sure this is exactly as shown - no quotes around "edge"
 export const runtime = "edge"
 
-// Fix the import to match our updated auth.ts file
 import { logout } from "@/lib/auth"
 
 export async function POST() {
