@@ -1,4 +1,3 @@
-"use client"
 // The runtime must be a string, not a function
 export const runtime = "edge"
 
