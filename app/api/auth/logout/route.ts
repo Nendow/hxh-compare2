@@ -1,15 +1,18 @@
 "use client"
 export const runtime = "edge"
-import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
+
+import { logout } from "@/lib/auth"
 
 export async function POST() {
-  try {
-    await auth.logout()
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error("Logout error:", error)
-    return NextResponse.json({ error: "An unexpected error occurred" }, { status: 500 })
-  }
+  await logout()
+
+  // Clear the auth cookie
+  return new Response(JSON.stringify({ success: true }), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Set-Cookie": "auth-token=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0",
+    },
+  })
 }
 
